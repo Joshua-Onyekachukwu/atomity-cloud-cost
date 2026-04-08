@@ -33,9 +33,10 @@ export function BarColumn({
   onDrillDown,
   hasDrillDown,
 }: BarColumnProps) {
-  const [hovered, setHovered]   = useState(false);
-  const heightPct               = maxTotal > 0 ? (item.total / maxTotal) * 100 : 0;
-  const animatedTotal           = useCountUp(item.total, 1000, index * 80, isActive);
+  const [hovered, setHovered] = useState(false);
+
+  const heightPct = maxTotal > 0 ? (item.total / maxTotal) * 100 : 0;
+  const animatedTotal = useCountUp(item.total, 1000, index * 80, isActive);
 
   return (
     <motion.div
@@ -43,18 +44,19 @@ export function BarColumn({
       animate={{ opacity: 1, y: 0 }}
       transition={{
         duration: 0.45,
-        delay:    index * 0.08,
-        ease:     [0.22, 1, 0.36, 1],
+        delay: index * 0.08,
+        ease: [0.22, 1, 0.36, 1],
       }}
       onHoverStart={() => setHovered(true)}
       onHoverEnd={() => setHovered(false)}
       style={{
-        display:       'flex',
+        display: 'flex',
         flexDirection: 'column',
-        alignItems:    'center',
-        gap:           '10px',
-        flex:          1,
-        cursor:        hasDrillDown ? 'pointer' : 'default',
+        alignItems: 'center',
+        gap: '10px',
+        flex: 1,
+        height: '100%', // ✅ important fix
+        cursor: hasDrillDown ? 'pointer' : 'default',
       }}
       onClick={() => {
         onSelect(item.id);
@@ -74,30 +76,30 @@ export function BarColumn({
       <div
         className="bar-column-wrapper"
         style={{
-          width:          'var(--bar-width, 90px)',
-          height:         'var(--bar-max-height, 200px)',
-          display:        'flex',
-          flexDirection:  'column',
+          width: 'var(--bar-width, 90px)',
+          height: '100%', // ✅ FIXED (was 200px)
+          display: 'flex',
+          flexDirection: 'column',
           justifyContent: 'flex-end',
-          position:       'relative',
+          position: 'relative',
         }}
       >
-        {/* Tooltip — appears on hover */}
+        {/* Tooltip */}
         <Tooltip item={item} visible={hovered} />
 
-        {/* Price label — floats above the bar */}
+        {/* Value label above bar */}
         <motion.span
           animate={{ opacity: isSelected ? 1 : 0.7 }}
           style={{
-            position:           'absolute',
-            top:                '-24px',
-            left:               '50%',
-            transform:          'translateX(-50%)',
-            fontSize:           'var(--font-size-xs)',
-            fontWeight:         700,
-            color:              tokens.colors.accentPrimary,
+            position: 'absolute',
+            top: '-20px', // slightly tightened
+            left: '50%',
+            transform: 'translateX(-50%)',
+            fontSize: 'var(--font-size-xs)',
+            fontWeight: 700,
+            color: tokens.colors.accentPrimary,
             fontVariantNumeric: 'tabular-nums',
-            whiteSpace:         'nowrap',
+            whiteSpace: 'nowrap',
           }}
         >
           {formatCurrency(animatedTotal)}
@@ -113,18 +115,20 @@ export function BarColumn({
           }}
           transition={{ duration: 0.22, ease: 'easeOut' }}
           style={{
-            width:         '100%',
-            height:        `${heightPct}%`,
-            borderRadius:  `${tokens.radius.sm} ${tokens.radius.sm} ${tokens.radius.xs} ${tokens.radius.xs}`,
-            overflow:      'hidden',
-            display:       'flex',
+            width: '100%',
+            height: `${heightPct}%`,
+            borderRadius: `${tokens.radius.sm} ${tokens.radius.sm} ${tokens.radius.xs} ${tokens.radius.xs}`,
+            overflow: 'hidden',
+            display: 'flex',
             flexDirection: 'column-reverse',
-            minHeight:     '8px',
+            minHeight: '8px',
           }}
         >
           {RESOURCE_KEYS.map((key, si) => {
             const segmentValue = item.breakdown[key];
-            const segmentPct   = item.total > 0 ? (segmentValue / item.total) * 100 : 0;
+            const segmentPct =
+              item.total > 0 ? (segmentValue / item.total) * 100 : 0;
+
             if (segmentPct === 0) return null;
 
             return (
@@ -134,45 +138,96 @@ export function BarColumn({
                 animate={{ scaleY: 1 }}
                 transition={{
                   duration: 0.55,
-                  delay:    index * 0.08 + si * 0.06,
-                  ease:     [0.22, 1, 0.36, 1],
+                  delay: index * 0.08 + si * 0.06,
+                  ease: [0.22, 1, 0.36, 1],
                 }}
                 style={{
-                  width:           '100%',
-                  height:          `${segmentPct}%`,
+                  width: '100%',
+                  height: `${segmentPct}%`,
                   backgroundColor: RESOURCE_COLOR_VARS[key],
                   transformOrigin: 'bottom',
-                  minHeight:       '3px',
-                  filter:          hovered || isSelected
-                    ? 'brightness(1.1)'
-                    : 'brightness(1)',
+                  minHeight: '3px',
+                  filter:
+                    hovered || isSelected
+                      ? 'brightness(1.1)'
+                      : 'brightness(1)',
                   transition: `filter ${tokens.transition.fast}`,
                 }}
               />
             );
           })}
         </motion.div>
+
+        {/* Drill-down hint */}
+        {hasDrillDown && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            whileHover={{ opacity: 1, y: -2 }}
+            style={{
+              position: 'absolute',
+              bottom: '-22px',
+              left: '50%',
+              transform: 'translateX(-50%)',
+              color: tokens.colors.accentPrimary,
+              fontSize: 'var(--font-size-xs)',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '2px',
+              opacity: 0,
+              pointerEvents: 'none',
+            }}
+          >
+            <svg
+              width="10"
+              height="10"
+              viewBox="0 0 10 10"
+              fill="currentColor"
+              aria-hidden="true"
+            >
+              <path
+                d="M5 1v8M1 5l4 4 4-4"
+                stroke="currentColor"
+                strokeWidth="1.5"
+                strokeLinecap="round"
+                fill="none"
+              />
+            </svg>
+          </motion.div>
+        )}
       </div>
 
-      {/* Name label below bar */}
-      <span
-        className="bar-label-name"
+      {/* Label below bar */}
+      <motion.span
+        animate={{
+          color:
+            isSelected || hovered
+              ? tokens.colors.textPrimary
+              : tokens.colors.textSecondary,
+          fontWeight: isSelected || hovered ? 700 : 500,
+        }}
+        transition={{ duration: 0.15 }}
         style={{
-          fontSize:     'var(--font-size-xs)',
-          fontWeight:   isSelected ? 700 : 500,
-          color:        isSelected
-            ? tokens.colors.textPrimary
-            : tokens.colors.textSecondary,
-          textAlign:    'center',
-          maxWidth:     'var(--bar-width, 90px)',
-          overflow:     'hidden',
-          textOverflow: 'ellipsis',
-          whiteSpace:   'nowrap',
-          transition:   `color ${tokens.transition.fast}`,
+          fontSize: 'var(--font-size-xs)',
+          textAlign: 'center',
+          maxWidth: hovered ? '140px' : 'var(--bar-width, 90px)',
+          overflow: hovered ? 'visible' : 'hidden',
+          textOverflow: hovered ? 'unset' : 'ellipsis',
+          whiteSpace: hovered ? 'normal' : 'nowrap',
+          wordBreak: 'break-word',
+          transition: `max-width ${tokens.transition.base}, color ${tokens.transition.fast}`,
+          position: 'relative',
+          zIndex: hovered ? 10 : 1,
+          backgroundColor: hovered
+            ? tokens.colors.bgCard
+            : 'transparent',
+          borderRadius: hovered ? tokens.radius.xs : '0px',
+          paddingInline: hovered ? '4px' : '0px',
+          paddingBlock: hovered ? '2px' : '0px',
+          boxShadow: hovered ? tokens.shadow.sm : 'none',
         }}
       >
         {item.displayName}
-      </span>
+      </motion.span>
     </motion.div>
   );
 }
