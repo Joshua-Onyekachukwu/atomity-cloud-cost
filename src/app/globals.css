@@ -1,0 +1,271 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ─────────────────────────────────────────
+   DESIGN TOKENS — light mode (default)
+───────────────────────────────────────── */
+:root {
+  /* Backgrounds */
+  --color-bg-primary:   #f2f7f4;
+  --color-bg-secondary: #ffffff;
+  --color-bg-card:      #ffffff;
+  --color-bg-subtle:    #eaf5ef;
+  --color-bg-hover:     #e0f0e8;
+
+  /* Text */
+  --color-text-primary:   #0b1f16;
+  --color-text-secondary: #3a6652;
+  --color-text-muted:     #7aab90;
+  --color-text-inverse:   #ffffff;
+
+  /* Accent */
+  --color-accent-primary: #00c85a;
+  --color-accent-bright:  #00e87a;
+  --color-accent-glow:    rgba(0, 200, 90, 0.28);
+  --color-accent-dim:     rgba(0, 200, 90, 0.10);
+
+  /* Resource segment colours (stacked bar) */
+  --color-cpu:     #00c85a;
+  --color-ram:     #2dd47a;
+  --color-storage: #6ee7a8;
+  --color-network: #a7f3cc;
+  --color-gpu:     #818cf8;
+
+  /* Semantic */
+  --color-success:    #059669;
+  --color-warning:    #d97706;
+  --color-error:      #dc2626;
+  --color-success-bg: rgba(5, 150, 105, 0.10);
+  --color-warning-bg: rgba(217, 119, 6, 0.10);
+  --color-error-bg:   rgba(220, 38, 38, 0.10);
+
+  /* Borders */
+  --color-border:        #d8ede3;
+  --color-border-subtle: #edf5f1;
+
+  /* Radius */
+  --radius-xs:   4px;
+  --radius-sm:   8px;
+  --radius-md:   12px;
+  --radius-lg:   16px;
+  --radius-xl:   24px;
+  --radius-full: 9999px;
+
+  /* Shadows */
+  --shadow-xs:   0 1px 2px rgba(0, 0, 0, 0.04);
+  --shadow-sm:   0 2px 8px rgba(0, 0, 0, 0.06);
+  --shadow-md:   0 4px 20px rgba(0, 0, 0, 0.08);
+  --shadow-lg:   0 8px 40px rgba(0, 0, 0, 0.12);
+  --shadow-glow: 0 0 28px var(--color-accent-glow);
+
+  /* Fluid typography — clamp(min, preferred, max) */
+  --font-size-xs:   clamp(0.688rem, 0.65rem  + 0.19vw, 0.75rem);
+  --font-size-sm:   clamp(0.813rem, 0.77rem  + 0.19vw, 0.875rem);
+  --font-size-base: clamp(0.9rem,   0.86rem  + 0.19vw, 1rem);
+  --font-size-lg:   clamp(1rem,     0.93rem  + 0.35vw, 1.125rem);
+  --font-size-xl:   clamp(1.125rem, 1rem     + 0.63vw, 1.375rem);
+  --font-size-2xl:  clamp(1.5rem,   1.2rem   + 1.5vw,  2rem);
+  --font-size-3xl:  clamp(2rem,     1.5rem   + 2.5vw,  2.75rem);
+
+  /* Transitions */
+  --transition-fast: 120ms ease;
+  --transition-base: 220ms ease;
+  --transition-slow: 380ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ─────────────────────────────────────────
+   DARK MODE OVERRIDES
+───────────────────────────────────────── */
+[data-theme='dark'] {
+  --color-bg-primary:   #06100a;
+  --color-bg-secondary: #0c1810;
+  --color-bg-card:      #0f1e13;
+  --color-bg-subtle:    #162319;
+  --color-bg-hover:     #1d2e21;
+
+  --color-text-primary:   #e0f5ea;
+  --color-text-secondary: #72b48d;
+  --color-text-muted:     #425c4e;
+  --color-text-inverse:   #0b1f16;
+
+  --color-accent-primary: #00e87a;
+  --color-accent-bright:  #40ffaa;
+  --color-accent-glow:    rgba(0, 232, 122, 0.20);
+  --color-accent-dim:     rgba(0, 232, 122, 0.07);
+
+  --color-cpu:     #00e87a;
+  --color-ram:     #34d899;
+  --color-storage: #6ee7b0;
+  --color-network: #a7f3cc;
+  --color-gpu:     #a5b4fc;
+
+  --color-success:    #10b981;
+  --color-warning:    #f59e0b;
+  --color-error:      #f87171;
+  --color-success-bg: rgba(16, 185, 129, 0.12);
+  --color-warning-bg: rgba(245, 158, 11, 0.12);
+  --color-error-bg:   rgba(248, 113, 113, 0.12);
+
+  --color-border:        #1a2e22;
+  --color-border-subtle: #111c16;
+
+  --shadow-xs:   0 1px 2px rgba(0, 0, 0, 0.20);
+  --shadow-sm:   0 2px 8px rgba(0, 0, 0, 0.28);
+  --shadow-md:   0 4px 20px rgba(0, 0, 0, 0.36);
+  --shadow-lg:   0 8px 40px rgba(0, 0, 0, 0.48);
+  --shadow-glow: 0 0 32px var(--color-accent-glow);
+}
+
+/* ─────────────────────────────────────────
+   BASE RESET
+───────────────────────────────────────── */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-family: -apple-system, BlinkMacSystemFont, 'Inter', 'Segoe UI', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  scroll-behavior: smooth;
+}
+
+body {
+  background-color: var(--color-bg-primary);
+  color: var(--color-text-primary);
+  font-size: var(--font-size-base);
+  line-height: 1.6;
+  min-height: 100dvh;
+  transition:
+    background-color var(--transition-slow),
+    color var(--transition-slow);
+}
+
+/* ─────────────────────────────────────────
+   ACCESSIBILITY — respect reduced motion
+───────────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* ─────────────────────────────────────────
+   MODERN CSS — container query setup
+───────────────────────────────────────── */
+.cost-card-container {
+  container-type: inline-size;
+  container-name: cost-card;
+}
+
+/* Responsive bar dimensions driven by container width */
+@container cost-card (max-width: 480px) {
+  .bar-chart-area {
+    --bar-max-height: 120px;
+    --bar-width: 52px;
+    gap: 12px;
+  }
+  .bar-label-name {
+    font-size: var(--font-size-xs);
+    max-width: 60px;
+  }
+}
+
+@container cost-card (min-width: 481px) and (max-width: 700px) {
+  .bar-chart-area {
+    --bar-max-height: 160px;
+    --bar-width: 72px;
+  }
+}
+
+@container cost-card (min-width: 701px) {
+  .bar-chart-area {
+    --bar-max-height: 220px;
+    --bar-width: 100px;
+  }
+}
+
+/* ─────────────────────────────────────────
+   MODERN CSS — native nesting for table
+───────────────────────────────────────── */
+.cost-table {
+  width: 100%;
+  border-collapse: collapse;
+
+  & thead th {
+    font-size: var(--font-size-xs);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--color-text-muted);
+    padding-block: 10px;
+    padding-inline: 16px;
+    text-align: end;
+
+    &:first-child { text-align: start; }
+  }
+
+  & tbody tr {
+    border-bottom: 1px solid var(--color-border-subtle);
+    transition: background-color var(--transition-fast);
+
+    &:hover { background-color: var(--color-bg-subtle); }
+
+    /* :has() — highlight row if it contains a warning/critical badge */
+    &:has(.efficiency-warning) {
+      background-color: color-mix(in srgb, var(--color-warning) 5%, transparent);
+    }
+    &:has(.efficiency-critical) {
+      background-color: color-mix(in srgb, var(--color-error) 5%, transparent);
+    }
+  }
+
+  & tbody td {
+    padding-block: 14px;
+    padding-inline: 16px;
+    font-size: var(--font-size-sm);
+    text-align: end;
+    color: var(--color-text-secondary);
+
+    &:first-child {
+      text-align: start;
+      font-weight: 600;
+      color: var(--color-text-primary);
+    }
+    &:last-child {
+      font-weight: 700;
+      color: var(--color-text-primary);
+    }
+  }
+}
+
+/* ─────────────────────────────────────────
+   UTILITY CLASSES
+───────────────────────────────────────── */
+.focus-ring:focus-visible {
+  outline: 2px solid var(--color-accent-primary);
+  outline-offset: 2px;
+  border-radius: var(--radius-sm);
+}
+
+@keyframes pulse-glow {
+  0%, 100% { box-shadow: 0 0 0 0 var(--color-accent-glow); }
+  50%       { box-shadow: 0 0 0 6px transparent; }
+}
+
+.pulse-glow {
+  animation: pulse-glow 2.4s ease-in-out infinite;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: var(--color-bg-subtle); }
+::-webkit-scrollbar-thumb {
+  background: var(--color-border);
+  border-radius: var(--radius-full);
+}
