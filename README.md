@@ -1,4 +1,3 @@
-# atomity-cloud-cost
 # Atomity — Cloud Cost Explorer
 
 A scroll-triggered, drill-down Kubernetes cost explorer built for the Atomity frontend engineering challenge.
@@ -185,3 +184,14 @@ Given the scope of this project (max 16 visible nodes at any level), memoisation
 - **`React.memo` + `useMemo`** on leaf nodes for large datasets
 - **E2E tests** with Playwright covering the full drill-down flow
 - **Storybook** for isolated component development and visual regression testing
+
+
+---
+
+## Author
+
+**Joshua Onyekachukwu**  
+Frontend Developer  
+[github.com/Joshua-Onyekachukwu](https://github.com/Joshua-Onyekachukwu)
+
+Built for the Atomity Frontend Engineering Challenge — April 2026
