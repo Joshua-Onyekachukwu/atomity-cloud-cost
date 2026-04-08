@@ -31,17 +31,17 @@ const NAMESPACES = ['api', 'workers', 'data', 'monitoring'];
    Target cost ranges per level (in USD)
    These keep bars visually comparable
 ───────────────────────────────────────── */
-const CLUSTER_TARGETS   = [18000, 12000, 9500, 14500];   // total per cluster
-const NAMESPACE_WEIGHTS = [0.38, 0.28, 0.20, 0.14];      // how budget splits across namespaces
-const POD_WEIGHTS       = [0.44, 0.28, 0.18, 0.10];      // how namespace budget splits across pods
+const CLUSTER_TARGETS   = [18000, 12000, 9500, 14500];
+const NAMESPACE_WEIGHTS = [0.38, 0.28, 0.20, 0.14];
+const POD_WEIGHTS       = [0.44, 0.28, 0.18, 0.10];
 
 /* ─────────────────────────────────────────
    Normalize a value from one range into another
 ───────────────────────────────────────── */
 function normalize(
-  value: number,
-  inMin: number,
-  inMax: number,
+  value:  number,
+  inMin:  number,
+  inMax:  number,
   outMin: number,
   outMax: number,
 ): number {
@@ -70,7 +70,7 @@ function deriveCosts(
   const storage = Math.round(remaining * 0.10);
   const network = remaining - cpu - ram - storage;
 
-  // Efficiency derived from rating (1–5 scale → 5%–90%)
+  // Efficiency derived from rating (1–5 → 5%–90%)
   const efficiency = Math.min(90, Math.max(5, Math.round(rating * 17)));
 
   return {
@@ -135,8 +135,8 @@ export function buildHierarchy(products: DummyProduct[]): HierarchyNode[] {
   }
   const source = padded.slice(0, 64);
 
-  // Pre-compute min/max rating across all products for normalization
-  const ratings  = source.map((p) => p.rating);
+  // Pre-compute min/max rating for normalization
+  const ratings   = source.map((p) => p.rating);
   const minRating = Math.min(...ratings);
   const maxRating = Math.max(...ratings);
 
@@ -145,17 +145,12 @@ export function buildHierarchy(products: DummyProduct[]): HierarchyNode[] {
     const clusterProducts = source.slice(ci * 16, (ci + 1) * 16);
 
     const namespaceNodes: HierarchyNode[] = NAMESPACES.map((nsSlug, ni) => {
-      // Each namespace gets a weighted slice of the cluster budget
       const nsBudget   = clusterBudget * NAMESPACE_WEIGHTS[ni];
       const nsProducts = clusterProducts.slice(ni * 4, (ni + 1) * 4);
 
       const podNodes: HierarchyNode[] = nsProducts.map((p, pi) => {
-        // Each pod gets a weighted slice of the namespace budget
-        const podBudget = nsBudget * POD_WEIGHTS[pi];
-
-        // Normalize rating into 1–5 so efficiency varies naturally
+        const podBudget  = nsBudget * POD_WEIGHTS[pi];
         const normRating = normalize(p.rating, minRating, maxRating, 1, 5);
-
         const { total, efficiency, breakdown } = deriveCosts(podBudget, p.id, normRating);
 
         return {
@@ -186,6 +181,29 @@ export function buildHierarchy(products: DummyProduct[]): HierarchyNode[] {
       children: namespaceNodes,
     };
   });
+}
+
+/* ─────────────────────────────────────────
+   Scale a full hierarchy by a time multiplier
+   Called in CloudCostSection via useMemo
+───────────────────────────────────────── */
+export function scaleHierarchy(
+  nodes:      HierarchyNode[],
+  multiplier: number,
+): HierarchyNode[] {
+  return nodes.map((node) => ({
+    ...node,
+    total: Math.round(node.total * multiplier),
+    breakdown: {
+      cpu:     Math.round(node.breakdown.cpu     * multiplier),
+      ram:     Math.round(node.breakdown.ram     * multiplier),
+      storage: Math.round(node.breakdown.storage * multiplier),
+      network: Math.round(node.breakdown.network * multiplier),
+      gpu:     Math.round(node.breakdown.gpu     * multiplier),
+    },
+    // Recursively scale children too
+    children: scaleHierarchy(node.children, multiplier),
+  }));
 }
 
 /* ─────────────────────────────────────────
