@@ -25,5 +25,19 @@
     "postcss": "^8",
     "tailwindcss": "^3.4.11",
     "typescript": "^5"
-  }
+  },
+  "description": "",
+  "main": "postcss.config.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Joshua-Onyekachukwu/atomity-cloud-cost.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/Joshua-Onyekachukwu/atomity-cloud-cost/issues"
+  },
+  "homepage": "https://github.com/Joshua-Onyekachukwu/atomity-cloud-cost#readme"
 }
